@@ -3,6 +3,7 @@ use std::fs;
 use std::path::Path;
 
 use crate::ant::{ActorRuntime, Ant, AntState};
+use crate::observability::{encode_prometheus, RuntimeSnapshot};
 use crate::simulation::AcoPolicy;
 use crate::world::{Cell, Grid, PheromoneField};
 
@@ -140,6 +141,39 @@ impl Simulation {
         self.metrics
     }
 
+    pub fn runtime_snapshot(&self) -> RuntimeSnapshot {
+        let mut carrying_ants = 0usize;
+        let mut searching_ants = 0usize;
+        let mut returning_ants = 0usize;
+        let mut total_energy = 0.0f32;
+
+        for ant in &self.ants {
+            total_energy += ant.energy;
+            if ant.carrying_food {
+                carrying_ants += 1;
+            }
+            match ant.state {
+                AntState::Searching => searching_ants += 1,
+                AntState::Returning => returning_ants += 1,
+            }
+        }
+
+        let average_energy = if self.ants.is_empty() {
+            0.0
+        } else {
+            total_energy / self.ants.len() as f32
+        };
+
+        RuntimeSnapshot {
+            carrying_ants,
+            searching_ants,
+            returning_ants,
+            average_energy,
+            max_food_pheromone: self.pheromones.max_food(),
+            max_home_pheromone: self.pheromones.max_home(),
+        }
+    }
+
     pub fn export_pheromones_csv(&self, path: &Path) -> std::io::Result<()> {
         let mut output = String::from("x,y,food,home\n");
         for (x, y, food, home) in self.pheromones.to_rows() {
@@ -159,6 +193,27 @@ impl Simulation {
             metrics.average_decision_score,
             metrics.active_food_sources
         );
+        fs::write(path, output)
+    }
+
+    pub fn export_ant_snapshot_csv(&self, path: &Path) -> std::io::Result<()> {
+        let mut output = String::from("id,x,y,state,carrying_food,energy\n");
+        for ant in &self.ants {
+            let state = match ant.state {
+                AntState::Searching => "searching",
+                AntState::Returning => "returning",
+            };
+            let _ = writeln!(
+                output,
+                "{},{},{},{},{},{}",
+                ant.id, ant.position.x, ant.position.y, state, ant.carrying_food, ant.energy
+            );
+        }
+        fs::write(path, output)
+    }
+
+    pub fn export_prometheus(&self, path: &Path) -> std::io::Result<()> {
+        let output = encode_prometheus(self.metrics(), self.runtime_snapshot());
         fs::write(path, output)
     }
 }

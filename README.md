@@ -96,6 +96,7 @@ sequenceDiagram
 - Dynamic pheromone field with evaporation and diffusion
 - ACO strategy abstraction for Basic, Max-Min, AS-rank, and AntNet-style scoring
 - CSV artifact export for metrics and pheromone snapshots
+- Prometheus-compatible metric export for observability pipelines
 - Python scripts for metric analysis, ASCII heatmap rendering, and experiment sweeps
 
 ## Run
@@ -110,6 +111,29 @@ The Rust binary writes:
 
 - `artifacts/metrics.csv`
 - `artifacts/pheromones.csv`
+- `artifacts/ants.csv`
+- `artifacts/prometheus.prom`
+
+## Observability
+
+EmpireAnts now emits a Prometheus textfile-compatible snapshot on every CLI run. This allows a node exporter textfile collector, CI artifact parser, or custom dashboard bridge to ingest the colony state without linking extra Rust dependencies.
+
+Tracked observability signals include:
+
+- colony throughput: steps executed and food collected
+- behavior quality: exploration moves and average decision score
+- runtime state: ants carrying food, searching, returning, and average energy
+- environment dynamics: active food sources and peak pheromone intensity
+
+Example metrics pipeline:
+
+```mermaid
+flowchart LR
+    RUN[empireants binary] --> PROM[artifacts/prometheus.prom]
+    PROM --> NODE[Node Exporter Textfile Collector]
+    NODE --> PROMETHEUS[Prometheus]
+    PROMETHEUS --> GRAFANA[Grafana Dashboards]
+```
 
 ## Development workflow
 
@@ -125,6 +149,7 @@ python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experime
 - The current runtime is intentionally deterministic and single-process so that model behavior is easy to test and benchmark.
 - The `ActorRuntime` is lightweight and designed as the seam for a future lock-free or sharded runtime.
 - The `render` module currently emits a frame summary instead of binding directly to Bevy or `wgpu`; that keeps the baseline compileable without heavy GPU dependencies.
+- The observability layer currently exports snapshots to disk; a live HTTP metrics endpoint can be added later without breaking the current API seams.
 - The code is organized to support later additions such as Prometheus metrics, a web control plane, compute shader diffusion, and distributed colonies.
 
 ## Recommended roadmap

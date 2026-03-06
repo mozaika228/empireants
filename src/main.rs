@@ -27,6 +27,8 @@ fn main() {
     let metrics = simulation.metrics();
     let pheromone_path = artifact_dir.join("pheromones.csv");
     let metrics_path = artifact_dir.join("metrics.csv");
+    let ant_snapshot_path = artifact_dir.join("ants.csv");
+    let prometheus_path = artifact_dir.join("prometheus.prom");
 
     if let Err(error) = simulation.export_pheromones_csv(&pheromone_path) {
         eprintln!("failed to write pheromone snapshot: {error}");
@@ -35,6 +37,16 @@ fn main() {
 
     if let Err(error) = simulation.export_metrics_csv(&metrics_path) {
         eprintln!("failed to write metrics snapshot: {error}");
+        std::process::exit(1);
+    }
+
+    if let Err(error) = simulation.export_ant_snapshot_csv(&ant_snapshot_path) {
+        eprintln!("failed to write ant snapshot: {error}");
+        std::process::exit(1);
+    }
+
+    if let Err(error) = simulation.export_prometheus(&prometheus_path) {
+        eprintln!("failed to write prometheus snapshot: {error}");
         std::process::exit(1);
     }
 
@@ -51,6 +63,8 @@ fn main() {
     println!("artifacts:");
     println!("  {}", pheromone_path.display());
     println!("  {}", metrics_path.display());
+    println!("  {}", ant_snapshot_path.display());
+    println!("  {}", prometheus_path.display());
 }
 
 fn parse_steps() -> usize {
@@ -82,4 +96,3 @@ fn seed_world(grid: &mut Grid) {
         grid.set_cell(16, y, Cell::Obstacle);
     }
 }
-
