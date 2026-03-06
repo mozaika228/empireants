@@ -1,0 +1,22 @@
+[package]
+name = "empireants"
+version = "0.1.0"
+edition = "2021"
+description = "Distributed ant colony simulation for emergent behavior and adaptive optimization research"
+license = "MIT"
+repository = "https://github.com/mozaika228/empireants"
+
+[lib]
+name = "empireants"
+path = "src/lib.rs"
+
+[[bin]]
+name = "empireants"
+path = "src/main.rs"
+
+[features]
+default = []
+realtime-render = []
+
+[dependencies]
+
