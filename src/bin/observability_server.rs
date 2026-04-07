@@ -53,7 +53,12 @@ fn main() {
     )));
     let scrape_count = Arc::new(AtomicU64::new(0));
     let started = Instant::now();
-    spawn_http_server(&bind, Arc::clone(&latest), Arc::clone(&scrape_count), started);
+    spawn_http_server(
+        &bind,
+        Arc::clone(&latest),
+        Arc::clone(&scrape_count),
+        started,
+    );
     println!(
         "observability server listening on http://{} (metrics: /metrics, health: /healthz)",
         bind

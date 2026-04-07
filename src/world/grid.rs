@@ -153,4 +153,3 @@ impl Grid {
         position.y * self.width + position.x
     }
 }
-

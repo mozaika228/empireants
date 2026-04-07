@@ -23,4 +23,3 @@ pub fn build_frame_summary(grid: &Grid, metrics: SimulationMetrics) -> String {
         metrics.active_food_sources
     )
 }
-

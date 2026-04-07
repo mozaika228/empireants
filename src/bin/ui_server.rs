@@ -11,8 +11,8 @@ fn main() {
     let bind = env::args()
         .nth(1)
         .unwrap_or_else(|| DEFAULT_BIND.to_string());
-    let metrics_target =
-        env::var("EMPIREANTS_METRICS_TARGET").unwrap_or_else(|_| DEFAULT_METRICS_TARGET.to_string());
+    let metrics_target = env::var("EMPIREANTS_METRICS_TARGET")
+        .unwrap_or_else(|_| DEFAULT_METRICS_TARGET.to_string());
     let ui_root = PathBuf::from("ui");
 
     let listener = match TcpListener::bind(&bind) {
@@ -40,7 +40,11 @@ fn main() {
     }
 }
 
-fn handle_client(stream: &mut TcpStream, ui_root: &Path, metrics_target: &str) -> std::io::Result<()> {
+fn handle_client(
+    stream: &mut TcpStream,
+    ui_root: &Path,
+    metrics_target: &str,
+) -> std::io::Result<()> {
     let mut buffer = [0_u8; 4096];
     let read = stream.read(&mut buffer)?;
     if read == 0 {
@@ -50,9 +54,8 @@ fn handle_client(stream: &mut TcpStream, ui_root: &Path, metrics_target: &str) -
     let first = request.lines().next().unwrap_or_default();
 
     if first.starts_with("GET /api/metrics") {
-        let body = proxy_request(metrics_target, "/metrics").unwrap_or_else(|error| {
-            format!("# ui_server proxy error: {}\n", error)
-        });
+        let body = proxy_request(metrics_target, "/metrics")
+            .unwrap_or_else(|error| format!("# ui_server proxy error: {}\n", error));
         return write_response(
             stream,
             200,
@@ -62,7 +65,8 @@ fn handle_client(stream: &mut TcpStream, ui_root: &Path, metrics_target: &str) -
     }
 
     if first.starts_with("GET /api/healthz") {
-        let body = proxy_request(metrics_target, "/healthz").unwrap_or_else(|_| "degraded\n".to_string());
+        let body =
+            proxy_request(metrics_target, "/healthz").unwrap_or_else(|_| "degraded\n".to_string());
         return write_response(stream, 200, "text/plain; charset=utf-8", body.as_bytes());
     }
 
@@ -90,7 +94,9 @@ fn handle_client(stream: &mut TcpStream, ui_root: &Path, metrics_target: &str) -
                 let content_type = detect_content_type(&fs_path);
                 return write_response(stream, 200, content_type, &body);
             }
-            Err(_) => return write_response(stream, 404, "text/plain; charset=utf-8", b"not found\n"),
+            Err(_) => {
+                return write_response(stream, 404, "text/plain; charset=utf-8", b"not found\n")
+            }
         }
     }
 

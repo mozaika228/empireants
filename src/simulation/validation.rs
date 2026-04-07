@@ -68,7 +68,10 @@ pub fn run_validation_suite() -> Vec<ValidationResult> {
     run_validation_suite_with(1.0, None)
 }
 
-pub fn run_validation_suite_with(step_factor: f32, ant_cap: Option<usize>) -> Vec<ValidationResult> {
+pub fn run_validation_suite_with(
+    step_factor: f32,
+    ant_cap: Option<usize>,
+) -> Vec<ValidationResult> {
     let mut results = Vec::new();
     for scenario in ValidationScenario::all() {
         for strategy in AcoStrategy::all() {

@@ -24,4 +24,3 @@ fn diffusion_spreads_signal_to_neighbors() {
     field.evaporate_and_diffuse(&grid, 0.0, 0.2);
     assert!(field.snapshot(neighbor).home > 0.0);
 }
-

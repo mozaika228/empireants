@@ -27,4 +27,3 @@ fn ant_returns_home_when_carrying_food() {
     let decision = ant.decide(&grid, &field, &AcoPolicy::default(), 1);
     assert!(grid.distance_to_nest(decision.next) < grid.distance_to_nest(ant.position));
 }
-

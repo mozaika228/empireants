@@ -12,7 +12,10 @@ fn main() {
     }
 
     let profile = parse_profile(&args[0]).unwrap_or_else(|| {
-        eprintln!("invalid profile '{}', expected one of: 10k, 100k, 1m", args[0]);
+        eprintln!(
+            "invalid profile '{}', expected one of: 10k, 100k, 1m",
+            args[0]
+        );
         std::process::exit(2);
     });
     let steps = args

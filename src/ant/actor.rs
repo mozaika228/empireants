@@ -86,7 +86,10 @@ impl ActorRuntime {
         self.mailbox.reserve(ants.len());
 
         for ant in ants {
-            self.try_enqueue(RuntimeCommand::Decide { ant_id: ant.id, tick });
+            self.try_enqueue(RuntimeCommand::Decide {
+                ant_id: ant.id,
+                tick,
+            });
         }
 
         let mut updates = Vec::with_capacity(self.mailbox.len());

@@ -90,9 +90,9 @@ impl Simulation {
     pub fn step(&mut self) {
         let started = Instant::now();
         let tick = self.metrics.steps;
-        let updates = self
-            .runtime
-            .gather_updates(&self.ants, &self.grid, &self.pheromones, &self.aco, tick);
+        let updates =
+            self.runtime
+                .gather_updates(&self.ants, &self.grid, &self.pheromones, &self.aco, tick);
 
         let mut score_sum = 0.0;
         for update in updates {
@@ -113,7 +113,8 @@ impl Simulation {
             }
 
             if update.carrying_food {
-                self.pheromones.deposit_food(update.from, self.config.food_deposit);
+                self.pheromones
+                    .deposit_food(update.from, self.config.food_deposit);
                 if update.to == self.grid.nest() {
                     ant.carrying_food = false;
                     ant.state = AntState::Searching;
@@ -121,9 +122,12 @@ impl Simulation {
                     self.metrics.food_collected += 1;
                 }
             } else {
-                self.pheromones.deposit_home(update.from, self.config.home_deposit);
+                self.pheromones
+                    .deposit_home(update.from, self.config.home_deposit);
                 if let Some(Cell::Food(_)) = self.grid.get(update.to) {
-                    let harvested = self.grid.harvest_food(update.to, self.config.harvest_amount);
+                    let harvested = self
+                        .grid
+                        .harvest_food(update.to, self.config.harvest_amount);
                     if harvested > 0 {
                         ant.carrying_food = true;
                         ant.state = AntState::Returning;
@@ -152,9 +156,9 @@ impl Simulation {
             self.metrics.average_step_micros = step_micros as f64;
         } else {
             let prev_weight = (self.metrics.steps - 1) as f64;
-            self.metrics.average_step_micros =
-                (self.metrics.average_step_micros * prev_weight + step_micros as f64)
-                    / self.metrics.steps as f64;
+            self.metrics.average_step_micros = (self.metrics.average_step_micros * prev_weight
+                + step_micros as f64)
+                / self.metrics.steps as f64;
         }
         self.metrics.simulation_elapsed_seconds += step_micros as f64 / 1_000_000.0;
         let runtime_stats = self.runtime.stats();

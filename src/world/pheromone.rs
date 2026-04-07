@@ -45,8 +45,22 @@ impl PheromoneField {
     pub fn evaporate_and_diffuse(&mut self, grid: &Grid, evaporation: f32, diffusion: f32) {
         let evaporation = evaporation.clamp(0.0, 1.0);
         let diffusion = diffusion.clamp(0.0, 0.25);
-        self.food = diffuse_channel(&self.food, grid, self.width, self.height, evaporation, diffusion);
-        self.home = diffuse_channel(&self.home, grid, self.width, self.height, evaporation, diffusion);
+        self.food = diffuse_channel(
+            &self.food,
+            grid,
+            self.width,
+            self.height,
+            evaporation,
+            diffusion,
+        );
+        self.home = diffuse_channel(
+            &self.home,
+            grid,
+            self.width,
+            self.height,
+            evaporation,
+            diffusion,
+        );
     }
 
     pub fn max_food(&self) -> f32 {

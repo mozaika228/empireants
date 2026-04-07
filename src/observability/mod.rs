@@ -30,7 +30,9 @@ pub fn encode_prometheus(metrics: SimulationMetrics, runtime: RuntimeSnapshot) -
         "empireants_food_collected_total {}",
         metrics.food_collected
     );
-    output.push_str("# HELP empireants_exploration_moves_total Exploratory moves performed by ants.\n");
+    output.push_str(
+        "# HELP empireants_exploration_moves_total Exploratory moves performed by ants.\n",
+    );
     output.push_str("# TYPE empireants_exploration_moves_total counter\n");
     let _ = writeln!(
         output,
@@ -44,7 +46,8 @@ pub fn encode_prometheus(metrics: SimulationMetrics, runtime: RuntimeSnapshot) -
         "empireants_average_decision_score {:.5}",
         metrics.average_decision_score
     );
-    output.push_str("# HELP empireants_active_food_sources Active food source cells in the grid.\n");
+    output
+        .push_str("# HELP empireants_active_food_sources Active food source cells in the grid.\n");
     output.push_str("# TYPE empireants_active_food_sources gauge\n");
     let _ = writeln!(
         output,
@@ -59,13 +62,25 @@ pub fn encode_prometheus(metrics: SimulationMetrics, runtime: RuntimeSnapshot) -
     let _ = writeln!(output, "empireants_ants_carrying {}", runtime.carrying_ants);
     output.push_str("# HELP empireants_ants_searching Number of ants searching for food.\n");
     output.push_str("# TYPE empireants_ants_searching gauge\n");
-    let _ = writeln!(output, "empireants_ants_searching {}", runtime.searching_ants);
+    let _ = writeln!(
+        output,
+        "empireants_ants_searching {}",
+        runtime.searching_ants
+    );
     output.push_str("# HELP empireants_ants_returning Number of ants returning to nest.\n");
     output.push_str("# TYPE empireants_ants_returning gauge\n");
-    let _ = writeln!(output, "empireants_ants_returning {}", runtime.returning_ants);
+    let _ = writeln!(
+        output,
+        "empireants_ants_returning {}",
+        runtime.returning_ants
+    );
     output.push_str("# HELP empireants_average_energy Mean normalized ant energy.\n");
     output.push_str("# TYPE empireants_average_energy gauge\n");
-    let _ = writeln!(output, "empireants_average_energy {:.5}", runtime.average_energy);
+    let _ = writeln!(
+        output,
+        "empireants_average_energy {:.5}",
+        runtime.average_energy
+    );
     output.push_str("# HELP empireants_pheromone_food_max Maximum food pheromone intensity.\n");
     output.push_str("# TYPE empireants_pheromone_food_max gauge\n");
     let _ = writeln!(
@@ -80,56 +95,70 @@ pub fn encode_prometheus(metrics: SimulationMetrics, runtime: RuntimeSnapshot) -
         "empireants_pheromone_home_max {:.5}",
         runtime.max_home_pheromone
     );
-    output.push_str("# HELP empireants_step_latency_last_microseconds Last simulation step latency.\n");
+    output.push_str(
+        "# HELP empireants_step_latency_last_microseconds Last simulation step latency.\n",
+    );
     output.push_str("# TYPE empireants_step_latency_last_microseconds gauge\n");
     let _ = writeln!(
         output,
         "empireants_step_latency_last_microseconds {}",
         metrics.last_step_micros
     );
-    output.push_str("# HELP empireants_step_latency_avg_microseconds Average simulation step latency.\n");
+    output.push_str(
+        "# HELP empireants_step_latency_avg_microseconds Average simulation step latency.\n",
+    );
     output.push_str("# TYPE empireants_step_latency_avg_microseconds gauge\n");
     let _ = writeln!(
         output,
         "empireants_step_latency_avg_microseconds {:.2}",
         metrics.average_step_micros
     );
-    output.push_str("# HELP empireants_step_latency_max_microseconds Max simulation step latency.\n");
+    output
+        .push_str("# HELP empireants_step_latency_max_microseconds Max simulation step latency.\n");
     output.push_str("# TYPE empireants_step_latency_max_microseconds gauge\n");
     let _ = writeln!(
         output,
         "empireants_step_latency_max_microseconds {}",
         metrics.max_step_micros
     );
-    output.push_str("# HELP empireants_simulation_elapsed_seconds Wall time spent in simulation stepping.\n");
+    output.push_str(
+        "# HELP empireants_simulation_elapsed_seconds Wall time spent in simulation stepping.\n",
+    );
     output.push_str("# TYPE empireants_simulation_elapsed_seconds counter\n");
     let _ = writeln!(
         output,
         "empireants_simulation_elapsed_seconds {:.6}",
         metrics.simulation_elapsed_seconds
     );
-    output.push_str("# HELP empireants_runtime_mailbox_depth Current actor runtime mailbox depth.\n");
+    output
+        .push_str("# HELP empireants_runtime_mailbox_depth Current actor runtime mailbox depth.\n");
     output.push_str("# TYPE empireants_runtime_mailbox_depth gauge\n");
     let _ = writeln!(
         output,
         "empireants_runtime_mailbox_depth {}",
         metrics.runtime_mailbox_len
     );
-    output.push_str("# HELP empireants_runtime_dropped_messages_total Total dropped runtime messages.\n");
+    output.push_str(
+        "# HELP empireants_runtime_dropped_messages_total Total dropped runtime messages.\n",
+    );
     output.push_str("# TYPE empireants_runtime_dropped_messages_total counter\n");
     let _ = writeln!(
         output,
         "empireants_runtime_dropped_messages_total {}",
         metrics.runtime_dropped_messages_total
     );
-    output.push_str("# HELP empireants_runtime_restarts_total Total actor restarts performed by supervision.\n");
+    output.push_str(
+        "# HELP empireants_runtime_restarts_total Total actor restarts performed by supervision.\n",
+    );
     output.push_str("# TYPE empireants_runtime_restarts_total counter\n");
     let _ = writeln!(
         output,
         "empireants_runtime_restarts_total {}",
         metrics.runtime_restarts_total
     );
-    output.push_str("# HELP empireants_runtime_supervision_events_total Total runtime supervision events.\n");
+    output.push_str(
+        "# HELP empireants_runtime_supervision_events_total Total runtime supervision events.\n",
+    );
     output.push_str("# TYPE empireants_runtime_supervision_events_total counter\n");
     let _ = writeln!(
         output,
@@ -152,7 +181,9 @@ pub fn encode_prometheus_with_metadata(
         "empireants_uptime_seconds {:.6}",
         metadata.uptime_seconds
     );
-    output.push_str("# HELP empireants_metrics_scrapes_total Number of successful /metrics scrapes.\n");
+    output.push_str(
+        "# HELP empireants_metrics_scrapes_total Number of successful /metrics scrapes.\n",
+    );
     output.push_str("# TYPE empireants_metrics_scrapes_total counter\n");
     let _ = writeln!(
         output,
