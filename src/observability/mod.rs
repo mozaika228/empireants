@@ -12,6 +12,12 @@ pub struct RuntimeSnapshot {
     pub max_home_pheromone: f32,
 }
 
+#[derive(Clone, Copy, Debug, Default)]
+pub struct ScrapeMetadata {
+    pub uptime_seconds: f64,
+    pub scrape_count: u64,
+}
+
 pub fn encode_prometheus(metrics: SimulationMetrics, runtime: RuntimeSnapshot) -> String {
     let mut output = String::new();
     output.push_str("# HELP empireants_steps_total Simulation steps executed.\n");
@@ -73,6 +79,57 @@ pub fn encode_prometheus(metrics: SimulationMetrics, runtime: RuntimeSnapshot) -
         output,
         "empireants_pheromone_home_max {:.5}",
         runtime.max_home_pheromone
+    );
+    output.push_str("# HELP empireants_step_latency_last_microseconds Last simulation step latency.\n");
+    output.push_str("# TYPE empireants_step_latency_last_microseconds gauge\n");
+    let _ = writeln!(
+        output,
+        "empireants_step_latency_last_microseconds {}",
+        metrics.last_step_micros
+    );
+    output.push_str("# HELP empireants_step_latency_avg_microseconds Average simulation step latency.\n");
+    output.push_str("# TYPE empireants_step_latency_avg_microseconds gauge\n");
+    let _ = writeln!(
+        output,
+        "empireants_step_latency_avg_microseconds {:.2}",
+        metrics.average_step_micros
+    );
+    output.push_str("# HELP empireants_step_latency_max_microseconds Max simulation step latency.\n");
+    output.push_str("# TYPE empireants_step_latency_max_microseconds gauge\n");
+    let _ = writeln!(
+        output,
+        "empireants_step_latency_max_microseconds {}",
+        metrics.max_step_micros
+    );
+    output.push_str("# HELP empireants_simulation_elapsed_seconds Wall time spent in simulation stepping.\n");
+    output.push_str("# TYPE empireants_simulation_elapsed_seconds counter\n");
+    let _ = writeln!(
+        output,
+        "empireants_simulation_elapsed_seconds {:.6}",
+        metrics.simulation_elapsed_seconds
+    );
+    output
+}
+
+pub fn encode_prometheus_with_metadata(
+    metrics: SimulationMetrics,
+    runtime: RuntimeSnapshot,
+    metadata: ScrapeMetadata,
+) -> String {
+    let mut output = encode_prometheus(metrics, runtime);
+    output.push_str("# HELP empireants_uptime_seconds Uptime of observability endpoint process.\n");
+    output.push_str("# TYPE empireants_uptime_seconds gauge\n");
+    let _ = writeln!(
+        output,
+        "empireants_uptime_seconds {:.6}",
+        metadata.uptime_seconds
+    );
+    output.push_str("# HELP empireants_metrics_scrapes_total Number of successful /metrics scrapes.\n");
+    output.push_str("# TYPE empireants_metrics_scrapes_total counter\n");
+    let _ = writeln!(
+        output,
+        "empireants_metrics_scrapes_total {}",
+        metadata.scrape_count
     );
     output
 }

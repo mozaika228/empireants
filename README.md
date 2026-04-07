@@ -39,7 +39,8 @@ empireants/
 |   |   |-- scale.rs
 |   |   `-- aco.rs
 |   |-- bin/
-|   |   `-- scale_benchmark.rs
+|   |   |-- scale_benchmark.rs
+|   |   `-- observability_server.rs
 |   `-- render/
 |       `-- mod.rs
 |-- scripts/
@@ -124,10 +125,30 @@ The Rust binary writes:
 
 EmpireAnts now emits a Prometheus textfile-compatible snapshot on every CLI run. This allows a node exporter textfile collector, CI artifact parser, or custom dashboard bridge to ingest the colony state without linking extra Rust dependencies.
 
+For live dashboards, use the dedicated HTTP endpoint server:
+
+```bash
+cargo run --release --bin observability_server -- 127.0.0.1:9109 100000 384 384
+```
+
+- `GET /metrics`: Prometheus metrics stream
+- `GET /healthz`: readiness and liveness probe
+
+Minimal Prometheus scrape config:
+
+```yaml
+scrape_configs:
+  - job_name: empireants
+    scrape_interval: 2s
+    static_configs:
+      - targets: ["127.0.0.1:9109"]
+```
+
 Tracked observability signals include:
 
 - colony throughput: steps executed and food collected
 - behavior quality: exploration moves and average decision score
+- simulation latency: last/average/max step duration in microseconds
 - runtime state: ants carrying food, searching, returning, and average energy
 - environment dynamics: active food sources and peak pheromone intensity
 

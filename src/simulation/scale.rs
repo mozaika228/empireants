@@ -99,7 +99,7 @@ pub fn run_scale_profile(profile: ScaleProfile, override_steps: Option<usize>) -
     }
 }
 
-fn seeded_scale_world(width: usize, height: usize) -> Grid {
+pub fn seeded_scale_world(width: usize, height: usize) -> Grid {
     let mut grid = Grid::new(width, height);
     grid.set_nest(width / 2, height / 2);
 

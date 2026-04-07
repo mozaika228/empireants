@@ -2,6 +2,7 @@ use std::fmt::Write as _;
 use std::fs;
 use std::mem::size_of;
 use std::path::Path;
+use std::time::Instant;
 
 use crate::ant::{ActorRuntime, Ant, AntState};
 use crate::observability::{encode_prometheus, RuntimeSnapshot};
@@ -43,6 +44,10 @@ pub struct SimulationMetrics {
     pub exploration_moves: u64,
     pub average_decision_score: f32,
     pub active_food_sources: usize,
+    pub last_step_micros: u64,
+    pub average_step_micros: f64,
+    pub max_step_micros: u64,
+    pub simulation_elapsed_seconds: f64,
 }
 
 pub struct Simulation {
@@ -77,6 +82,7 @@ impl Simulation {
     }
 
     pub fn step(&mut self) {
+        let started = Instant::now();
         let tick = self.metrics.steps;
         let updates = self
             .runtime
@@ -124,6 +130,19 @@ impl Simulation {
         } else {
             score_sum / self.ants.len() as f32
         };
+
+        let step_micros = started.elapsed().as_micros() as u64;
+        self.metrics.last_step_micros = step_micros;
+        self.metrics.max_step_micros = self.metrics.max_step_micros.max(step_micros);
+        if self.metrics.steps == 1 {
+            self.metrics.average_step_micros = step_micros as f64;
+        } else {
+            let prev_weight = (self.metrics.steps - 1) as f64;
+            self.metrics.average_step_micros =
+                (self.metrics.average_step_micros * prev_weight + step_micros as f64)
+                    / self.metrics.steps as f64;
+        }
+        self.metrics.simulation_elapsed_seconds += step_micros as f64 / 1_000_000.0;
     }
 
     pub fn run_steps(&mut self, steps: usize) {
@@ -192,13 +211,17 @@ impl Simulation {
     pub fn export_metrics_csv(&self, path: &Path) -> std::io::Result<()> {
         let metrics = self.metrics();
         let output = format!(
-            "steps,ant_count,food_collected,exploration_moves,average_decision_score,active_food_sources\n{},{},{},{},{:.5},{}\n",
+            "steps,ant_count,food_collected,exploration_moves,average_decision_score,active_food_sources,last_step_micros,average_step_micros,max_step_micros,simulation_elapsed_seconds\n{},{},{},{},{:.5},{},{},{:.2},{},{}\n",
             metrics.steps,
             metrics.ant_count,
             metrics.food_collected,
             metrics.exploration_moves,
             metrics.average_decision_score,
-            metrics.active_food_sources
+            metrics.active_food_sources,
+            metrics.last_step_micros,
+            metrics.average_step_micros,
+            metrics.max_step_micros,
+            metrics.simulation_elapsed_seconds
         );
         fs::write(path, output)
     }
