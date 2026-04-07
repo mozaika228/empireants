@@ -1,5 +1,6 @@
 use std::fmt::Write as _;
 use std::fs;
+use std::mem::size_of;
 use std::path::Path;
 
 use crate::ant::{ActorRuntime, Ant, AntState};
@@ -125,6 +126,12 @@ impl Simulation {
         };
     }
 
+    pub fn run_steps(&mut self, steps: usize) {
+        for _ in 0..steps {
+            self.step();
+        }
+    }
+
     pub fn world(&self) -> &Grid {
         &self.grid
     }
@@ -215,5 +222,12 @@ impl Simulation {
     pub fn export_prometheus(&self, path: &Path) -> std::io::Result<()> {
         let output = encode_prometheus(self.metrics(), self.runtime_snapshot());
         fs::write(path, output)
+    }
+
+    pub fn estimated_memory_bytes(&self) -> usize {
+        let ant_bytes = self.ants.capacity() * size_of::<Ant>();
+        let cell_bytes = self.grid.cells().len() * size_of::<Cell>();
+        let pheromone_channel_bytes = self.grid.width() * self.grid.height() * size_of::<f32>() * 2;
+        ant_bytes + cell_bytes + pheromone_channel_bytes
     }
 }

@@ -45,53 +45,76 @@ impl Ant {
         policy: &AcoPolicy,
         tick: usize,
     ) -> AntDecision {
-        let neighbors = grid
-            .neighbors4(self.position)
-            .into_iter()
-            .filter(|position| grid.is_walkable(*position))
-            .collect::<Vec<_>>();
+        let x = self.position.x;
+        let y = self.position.y;
+        let mut best = self.position;
+        let mut best_score = f32::MIN;
+        let mut found = false;
+        let mut exploratory = false;
 
-        if neighbors.is_empty() {
+        if x > 0 {
+            evaluate_candidate(
+                self,
+                Position { x: x - 1, y },
+                grid,
+                pheromones,
+                policy,
+                tick,
+                &mut best,
+                &mut best_score,
+                &mut exploratory,
+                &mut found,
+            );
+        }
+        if x + 1 < grid.width() {
+            evaluate_candidate(
+                self,
+                Position { x: x + 1, y },
+                grid,
+                pheromones,
+                policy,
+                tick,
+                &mut best,
+                &mut best_score,
+                &mut exploratory,
+                &mut found,
+            );
+        }
+        if y > 0 {
+            evaluate_candidate(
+                self,
+                Position { x, y: y - 1 },
+                grid,
+                pheromones,
+                policy,
+                tick,
+                &mut best,
+                &mut best_score,
+                &mut exploratory,
+                &mut found,
+            );
+        }
+        if y + 1 < grid.height() {
+            evaluate_candidate(
+                self,
+                Position { x, y: y + 1 },
+                grid,
+                pheromones,
+                policy,
+                tick,
+                &mut best,
+                &mut best_score,
+                &mut exploratory,
+                &mut found,
+            );
+        }
+
+        if !found {
             return AntDecision {
                 next: self.position,
                 pheromone_score: 0.0,
                 was_exploratory: false,
             };
-        }
-
-        let mut best = neighbors[0];
-        let mut best_score = f32::MIN;
-        let mut exploratory = false;
-
-        for candidate in neighbors {
-            let snapshot = pheromones.snapshot(candidate);
-            let trail = if self.carrying_food {
-                snapshot.home
-            } else {
-                snapshot.food
-            };
-
-            let distance_bias = if self.carrying_food {
-                1.0 / (grid.distance_to_nest(candidate) as f32 + 1.0)
-            } else {
-                match grid.get(candidate) {
-                    Some(Cell::Food(amount)) if amount > 0 => 2.0,
-                    _ => 1.0 / (grid.distance_to_nest(candidate) as f32 + 1.0),
-                }
-            };
-
-            let revisit_penalty = if self.last_position == Some(candidate) {
-                0.15
-            } else {
-                1.0
-            };
-
-            let score = policy.score_candidate(trail, distance_bias, revisit_penalty);
-            if score > best_score {
-                best = candidate;
-                best_score = score;
-                exploratory = trail < policy.exploration_threshold(tick, self.id);
-            }
         }
 
         AntDecision {
@@ -105,5 +128,53 @@ impl Ant {
         self.last_position = Some(self.position);
         self.position = next;
         self.energy = (self.energy - 0.002).max(0.2);
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn evaluate_candidate(
+    ant: &Ant,
+    candidate: Position,
+    grid: &Grid,
+    pheromones: &PheromoneField,
+    policy: &AcoPolicy,
+    tick: usize,
+    best: &mut Position,
+    best_score: &mut f32,
+    exploratory: &mut bool,
+    found: &mut bool,
+) {
+    if !grid.is_walkable(candidate) {
+        return;
+    }
+
+    let snapshot = pheromones.snapshot(candidate);
+    let trail = if ant.carrying_food {
+        snapshot.home
+    } else {
+        snapshot.food
+    };
+
+    let distance_bias = if ant.carrying_food {
+        1.0 / (grid.distance_to_nest(candidate) as f32 + 1.0)
+    } else {
+        match grid.get(candidate) {
+            Some(Cell::Food(amount)) if amount > 0 => 2.0,
+            _ => 1.0 / (grid.distance_to_nest(candidate) as f32 + 1.0),
+        }
+    };
+
+    let revisit_penalty = if ant.last_position == Some(candidate) {
+        0.15
+    } else {
+        1.0
+    };
+
+    let score = policy.score_candidate(trail, distance_bias, revisit_penalty);
+    if score > *best_score {
+        *best = candidate;
+        *best_score = score;
+        *exploratory = trail < policy.exploration_threshold(tick, ant.id);
+        *found = true;
     }
 }

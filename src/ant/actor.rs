@@ -26,23 +26,23 @@ impl ActorRuntime {
         policy: &AcoPolicy,
         tick: usize,
     ) -> Vec<AntUpdate> {
-        ants.iter()
-            .map(|ant| {
-                let AntDecision {
-                    next,
-                    pheromone_score,
-                    was_exploratory,
-                } = ant.decide(grid, pheromones, policy, tick);
-                AntUpdate {
-                    ant_id: ant.id,
-                    from: ant.position,
-                    to: next,
-                    state: ant.state,
-                    carrying_food: ant.carrying_food,
-                    decision_score: pheromone_score,
-                    exploratory: was_exploratory,
-                }
-            })
-            .collect()
+        let mut updates = Vec::with_capacity(ants.len());
+        for ant in ants {
+            let AntDecision {
+                next,
+                pheromone_score,
+                was_exploratory,
+            } = ant.decide(grid, pheromones, policy, tick);
+            updates.push(AntUpdate {
+                ant_id: ant.id,
+                from: ant.position,
+                to: next,
+                state: ant.state,
+                carrying_food: ant.carrying_food,
+                decision_score: pheromone_score,
+                exploratory: was_exploratory,
+            });
+        }
+        updates
     }
 }

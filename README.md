@@ -36,7 +36,10 @@ empireants/
 |   |-- simulation/
 |   |   |-- mod.rs
 |   |   |-- step.rs
+|   |   |-- scale.rs
 |   |   `-- aco.rs
+|   |-- bin/
+|   |   `-- scale_benchmark.rs
 |   `-- render/
 |       `-- mod.rs
 |-- scripts/
@@ -45,7 +48,9 @@ empireants/
 |   `-- experiments.py
 |-- tests/
 |   |-- test_pheromone.rs
-|   `-- test_ant.rs
+|   |-- test_ant.rs
+|   |-- test_observability.rs
+|   `-- test_scale.rs
 |-- LICENSE
 |-- CONTRIBUTING.md
 `-- pyproject.toml
@@ -97,6 +102,7 @@ sequenceDiagram
 - ACO strategy abstraction for Basic, Max-Min, AS-rank, and AntNet-style scoring
 - CSV artifact export for metrics and pheromone snapshots
 - Prometheus-compatible metric export for observability pipelines
+- scale benchmark profiles for `10k`, `100k`, and `1m` ants
 - Python scripts for metric analysis, ASCII heatmap rendering, and experiment sweeps
 
 ## Run
@@ -141,8 +147,32 @@ flowchart LR
 cargo fmt --all
 cargo test
 cargo run -- 200
+cargo run --release --bin scale_benchmark
+cargo run --release --bin scale_benchmark 100k 200
 python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py
 ```
+
+## Real scaling benchmark
+
+The `scale_benchmark` binary is designed for throughput profiling on large colonies:
+
+- profile `10k`: warm-up profile for local tuning
+- profile `100k`: stress profile for CPU scheduling and memory pressure
+- profile `1m`: high-load profile for near-production benchmarking
+
+Example:
+
+```bash
+cargo run --release --bin scale_benchmark
+```
+
+Output format:
+
+```text
+scale_profile=100k ants=100000 steps=250 elapsed_s=... steps_per_s=... ant_updates_per_s=... est_memory_mb=...
+```
+
+This gives a reproducible baseline for comparing runtime optimizations and regression checks in CI.
 
 ## Engineering notes
 

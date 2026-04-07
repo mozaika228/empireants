@@ -91,21 +91,41 @@ fn diffuse_channel(
 
             let idx = y * width + x;
             let value = channel[idx] * (1.0 - evaporation);
-            let neighbors = grid.neighbors4(position);
-            let share = if neighbors.is_empty() {
-                0.0
-            } else {
-                value * diffusion / neighbors.len() as f32
-            };
             let retained = value * (1.0 - diffusion);
             next[idx] += retained;
-            for neighbor in neighbors {
-                if grid.is_walkable(neighbor) {
-                    next[neighbor.y * width + neighbor.x] += share;
-                }
+
+            let mut walkable_neighbors = 0usize;
+            if x > 0 && grid.is_walkable(Position { x: x - 1, y }) {
+                walkable_neighbors += 1;
+            }
+            if x + 1 < width && grid.is_walkable(Position { x: x + 1, y }) {
+                walkable_neighbors += 1;
+            }
+            if y > 0 && grid.is_walkable(Position { x, y: y - 1 }) {
+                walkable_neighbors += 1;
+            }
+            if y + 1 < height && grid.is_walkable(Position { x, y: y + 1 }) {
+                walkable_neighbors += 1;
+            }
+
+            if walkable_neighbors == 0 {
+                continue;
+            }
+
+            let share = value * diffusion / walkable_neighbors as f32;
+            if x > 0 && grid.is_walkable(Position { x: x - 1, y }) {
+                next[y * width + (x - 1)] += share;
+            }
+            if x + 1 < width && grid.is_walkable(Position { x: x + 1, y }) {
+                next[y * width + (x + 1)] += share;
+            }
+            if y > 0 && grid.is_walkable(Position { x, y: y - 1 }) {
+                next[(y - 1) * width + x] += share;
+            }
+            if y + 1 < height && grid.is_walkable(Position { x, y: y + 1 }) {
+                next[(y + 1) * width + x] += share;
             }
         }
     }
     next
 }
-
