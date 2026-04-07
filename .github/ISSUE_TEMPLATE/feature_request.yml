@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose a new runtime/simulation/observability capability.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What outcome should this feature enable?
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Proposed design
+      description: Runtime model, APIs, metrics, and trade-offs.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation plan
+      description: How will we verify correctness and performance?
+    validations:
+      required: true
+

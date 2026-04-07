@@ -12,8 +12,9 @@
 ```bash
 rustup toolchain install stable
 cargo fmt --all
+cargo clippy --all-targets --all-features -- -D warnings
 cargo test
-python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py
+python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py scripts/analyze_validation.py
 ```
 
 ## Pull request expectations
@@ -25,6 +26,7 @@ python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experime
 - For performance-sensitive changes, include `scale_benchmark` before/after numbers.
 - Runtime changes should include supervision/backpressure behavior notes and tests.
 - Scientific claims should include scenario names, strategy matrix, and reported KPI definitions.
+- Ensure CI passes all quality gates before requesting review.
 - Keep README and developer docs aligned with behavior and file layout.
 - Avoid unrelated refactors in the same change set.
 
@@ -42,3 +44,10 @@ Use concise, imperative commit messages, for example:
 - `feat: add pheromone diffusion metrics`
 - `docs: expand architecture diagrams`
 - `test: cover ant return-to-nest behavior`
+
+## CI and governance
+
+- CI workflow: `.github/workflows/ci.yml`
+- PR template: `.github/pull_request_template.md`
+- Issue templates: `.github/ISSUE_TEMPLATE/*`
+- Owners: `.github/CODEOWNERS`

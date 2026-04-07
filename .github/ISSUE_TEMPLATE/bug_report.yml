@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a defect or regression in simulation/runtime/ui.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Clear description of the defect and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Commands, config, scenario, and seed if applicable.
+      placeholder: |
+        1. cargo run --release --bin ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Rust version, Python version, CPU/GPU details.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Research validity, runtime stability, or UX impact.
+    validations:
+      required: true
+

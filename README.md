@@ -64,6 +64,16 @@ empireants/
 |   `-- test_scale.rs
 |-- LICENSE
 |-- CONTRIBUTING.md
+|-- .editorconfig
+|-- rust-toolchain.toml
+|-- clippy.toml
+|-- .github/
+|   |-- workflows/ci.yml
+|   |-- pull_request_template.md
+|   |-- CODEOWNERS
+|   `-- ISSUE_TEMPLATE/
+|       |-- bug_report.yml
+|       `-- feature_request.yml
 `-- pyproject.toml
 ```
 
@@ -203,6 +213,7 @@ flowchart LR
 
 ```bash
 cargo fmt --all
+cargo clippy --all-targets --all-features -- -D warnings
 cargo test
 cargo run -- 200
 cargo run --release --bin scale_benchmark
@@ -213,6 +224,22 @@ cargo run --release --bin ui_server -- 127.0.0.1:9110
 python scripts/analyze_validation.py
 python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py scripts/analyze_validation.py
 ```
+
+## Engineering quality
+
+Quality gates are codified in repository automation:
+
+- GitHub Actions CI:
+  - rust format/lint/test gate
+  - python script compile gate
+  - benchmark smoke gate (`scale_benchmark` + `scientific_validation`)
+- repository governance:
+  - `CODEOWNERS` for review ownership
+  - PR template with validation checklist and rollback section
+  - issue templates for defect and feature quality
+- consistency:
+  - pinned `rust-toolchain.toml` with `rustfmt` + `clippy`
+  - shared `.editorconfig` and `clippy.toml`
 
 ## Scientific validation
 

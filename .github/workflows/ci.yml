@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-quality:
+    name: Rust quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Cargo fmt (check)
+        run: cargo fmt --all -- --check
+      - name: Cargo clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Cargo test
+        run: cargo test --all-targets
+
+  python-quality:
+    name: Python quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile python scripts
+        run: python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py scripts/analyze_validation.py
+
+  benchmark-smoke:
+    name: Benchmark smoke
+    runs-on: ubuntu-latest
+    needs: [rust-quality]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Scale smoke
+        run: cargo run --release --bin scale_benchmark -- 10k 5
+      - name: Validation smoke
+        run: cargo run --release --bin scientific_validation
