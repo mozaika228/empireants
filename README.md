@@ -42,9 +42,14 @@ empireants/
 |   |-- bin/
 |   |   |-- scale_benchmark.rs
 |   |   |-- observability_server.rs
+|   |   |-- ui_server.rs
 |   |   `-- scientific_validation.rs
 |   `-- render/
 |       `-- mod.rs
+|-- ui/
+|   |-- index.html
+|   |-- styles.css
+|   `-- app.js
 |-- scripts/
 |   |-- analyze.py
 |   |-- analyze_validation.py
@@ -109,6 +114,7 @@ sequenceDiagram
 - actor runtime with mailbox backpressure, supervision events, and controlled actor recovery
 - CSV artifact export for metrics and pheromone snapshots
 - Prometheus-compatible metric export for observability pipelines
+- dedicated web UI for real-time observability and runtime diagnostics
 - scale benchmark profiles for `10k`, `100k`, and `1m` ants
 - scientific validation suite with scenario-strategy matrix and reproducible KPI report
 - Python scripts for metric analysis, ASCII heatmap rendering, and experiment sweeps
@@ -127,6 +133,29 @@ The Rust binary writes:
 - `artifacts/pheromones.csv`
 - `artifacts/ants.csv`
 - `artifacts/prometheus.prom`
+
+## UI
+
+EmpireAnts includes a realtime web dashboard for control-room style monitoring.
+
+Start backend metrics:
+
+```bash
+cargo run --release --bin observability_server -- 127.0.0.1:9109 100000 384 384
+```
+
+Start UI server in a second terminal:
+
+```bash
+set EMPIREANTS_METRICS_TARGET=127.0.0.1:9109
+cargo run --release --bin ui_server -- 127.0.0.1:9110
+```
+
+Open `http://127.0.0.1:9110` and use:
+
+- live KPI cards (throughput, latency, stability, active ants)
+- runtime supervision table (mailbox, drops, restarts)
+- trend charts for latency and food throughput
 
 ## Observability
 
@@ -179,8 +208,10 @@ cargo run -- 200
 cargo run --release --bin scale_benchmark
 cargo run --release --bin scale_benchmark 100k 200
 cargo run --release --bin scientific_validation
+set EMPIREANTS_METRICS_TARGET=127.0.0.1:9109
+cargo run --release --bin ui_server -- 127.0.0.1:9110
 python scripts/analyze_validation.py
-python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py
+python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py scripts/analyze_validation.py
 ```
 
 ## Scientific validation
@@ -229,7 +260,7 @@ This gives a reproducible baseline for comparing runtime optimizations and regre
 - The current runtime is intentionally deterministic and single-process so that model behavior is easy to test and benchmark.
 - The `ActorRuntime` is lightweight and designed as the seam for a future lock-free or sharded runtime.
 - The `render` module currently emits a frame summary instead of binding directly to Bevy or `wgpu`; that keeps the baseline compileable without heavy GPU dependencies.
-- The observability layer currently exports snapshots to disk; a live HTTP metrics endpoint can be added later without breaking the current API seams.
+- The observability layer now supports both artifact export and a live `/metrics` endpoint with a web dashboard.
 - The code is organized to support later additions such as Prometheus metrics, a web control plane, compute shader diffusion, and distributed colonies.
 
 ## Recommended roadmap

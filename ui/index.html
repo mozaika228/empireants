@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EmpireAnts Control Room</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <main class="layout">
+      <header class="hero">
+        <p class="kicker">EmpireAnts Research Console</p>
+        <h1>Distributed Colony Control Room</h1>
+        <p class="subtitle">
+          Real-time visibility for ant colony behavior, runtime supervision, and experimental KPIs.
+        </p>
+      </header>
+
+      <section class="panel controls">
+        <div class="controls-row">
+          <label for="poll-interval-ms">Poll interval (ms)</label>
+          <input id="poll-interval-ms" type="number" min="200" step="100" value="1000" />
+          <button id="start-btn" type="button">Start</button>
+          <button id="stop-btn" type="button">Stop</button>
+        </div>
+        <div class="controls-row">
+          <span id="health-dot" class="dot degraded"></span>
+          <span id="health-text">Health: unknown</span>
+          <span id="last-updated">Last updated: never</span>
+        </div>
+      </section>
+
+      <section class="cards">
+        <article class="panel card">
+          <h2>Throughput</h2>
+          <p id="metric-food-rate" class="metric">-</p>
+          <p class="caption">food/sec</p>
+        </article>
+        <article class="panel card">
+          <h2>Step Latency</h2>
+          <p id="metric-step-avg-ms" class="metric">-</p>
+          <p class="caption">avg ms</p>
+        </article>
+        <article class="panel card">
+          <h2>Runtime Stability</h2>
+          <p id="metric-runtime-stability" class="metric">-</p>
+          <p class="caption">1 / (1 + failures)</p>
+        </article>
+        <article class="panel card">
+          <h2>Active Ants</h2>
+          <p id="metric-ants-active" class="metric">-</p>
+          <p class="caption">searching + returning</p>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="panel chart-panel">
+          <h2>Step Latency Trend</h2>
+          <canvas id="latency-chart" width="800" height="220"></canvas>
+        </article>
+        <article class="panel chart-panel">
+          <h2>Food Throughput Trend</h2>
+          <canvas id="throughput-chart" width="800" height="220"></canvas>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>Runtime Supervision</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Mailbox depth</td><td id="runtime-mailbox-depth">-</td></tr>
+            <tr><td>Dropped messages</td><td id="runtime-dropped-total">-</td></tr>
+            <tr><td>Restarts total</td><td id="runtime-restarts-total">-</td></tr>
+            <tr><td>Supervision events</td><td id="runtime-supervision-total">-</td></tr>
+            <tr><td>Server uptime (s)</td><td id="runtime-server-uptime">-</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
