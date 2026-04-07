@@ -1,5 +1,5 @@
 mod actor;
-mod ant;
+mod agent;
 
 pub use actor::{ActorRuntime, AntUpdate, RuntimeConfig, RuntimeStats};
-pub use ant::{Ant, AntDecision, AntId, AntState};
+pub use agent::{Ant, AntDecision, AntId, AntState};

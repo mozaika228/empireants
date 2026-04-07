@@ -1,6 +1,6 @@
 use std::fmt::Write as _;
 use std::fs;
-use std::mem::size_of;
+use std::mem::{size_of, size_of_val};
 use std::path::Path;
 use std::time::Instant;
 
@@ -280,7 +280,7 @@ impl Simulation {
 
     pub fn estimated_memory_bytes(&self) -> usize {
         let ant_bytes = self.ants.capacity() * size_of::<Ant>();
-        let cell_bytes = self.grid.cells().len() * size_of::<Cell>();
+        let cell_bytes = size_of_val(self.grid.cells());
         let pheromone_channel_bytes = self.grid.width() * self.grid.height() * size_of::<f32>() * 2;
         ant_bytes + cell_bytes + pheromone_channel_bytes
     }

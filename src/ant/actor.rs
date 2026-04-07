@@ -1,4 +1,4 @@
-use crate::ant::ant::AntDecision;
+use crate::ant::agent::AntDecision;
 use crate::ant::{Ant, AntId, AntState};
 use crate::simulation::AcoPolicy;
 use crate::world::{Grid, PheromoneField, Position};
