@@ -1,0 +1,82 @@
+{
+  "title": "EmpireAnts Overview",
+  "uid": "empireants-overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "2s",
+  "timezone": "browser",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Step Latency (avg us)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "empireants_step_latency_avg_microseconds",
+          "legendFormat": "avg_step_us",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Food Collected Total",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "empireants_food_collected_total",
+          "legendFormat": "food_total",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Runtime Supervision",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "empireants_runtime_dropped_messages_total",
+          "legendFormat": "dropped",
+          "refId": "A"
+        },
+        {
+          "expr": "empireants_runtime_restarts_total",
+          "legendFormat": "restarts",
+          "refId": "B"
+        },
+        {
+          "expr": "empireants_runtime_supervision_events_total",
+          "legendFormat": "events",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Ant State Distribution",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "empireants_ants_searching",
+          "legendFormat": "searching",
+          "refId": "A"
+        },
+        {
+          "expr": "empireants_ants_returning",
+          "legendFormat": "returning",
+          "refId": "B"
+        },
+        {
+          "expr": "empireants_ants_carrying",
+          "legendFormat": "carrying",
+          "refId": "C"
+        }
+      ]
+    }
+  ]
+}

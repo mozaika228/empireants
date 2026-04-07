@@ -64,6 +64,19 @@ empireants/
 |   `-- test_scale.rs
 |-- LICENSE
 |-- CONTRIBUTING.md
+|-- CHANGELOG.md
+|-- ROADMAP.md
+|-- Dockerfile
+|-- docker-compose.yml
+|-- .env.example
+|-- Makefile
+|-- docker/
+|   |-- prometheus/prometheus.yml
+|   `-- grafana/
+|       |-- dashboards/empireants-overview.json
+|       `-- provisioning/
+|           |-- datasources/datasource.yml
+|           `-- dashboards/dashboards.yml
 |-- .editorconfig
 |-- rust-toolchain.toml
 |-- clippy.toml
@@ -223,6 +236,37 @@ set EMPIREANTS_METRICS_TARGET=127.0.0.1:9109
 cargo run --release --bin ui_server -- 127.0.0.1:9110
 python scripts/analyze_validation.py
 python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py scripts/analyze_validation.py
+```
+
+## Product package
+
+EmpireAnts ships with a ready-to-run stack for operations and demos:
+
+- simulation runtime service (`observability_server`)
+- web UI service (`ui_server`)
+- Prometheus scrape pipeline
+- Grafana with pre-provisioned EmpireAnts dashboard
+
+Quick start:
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+Service endpoints:
+
+- UI: `http://localhost:9110`
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3000`
+- Metrics endpoint: `http://localhost:9109/metrics`
+
+With `Makefile`:
+
+```bash
+make up
+make logs
+make down
 ```
 
 ## Engineering quality

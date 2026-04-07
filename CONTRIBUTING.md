@@ -15,6 +15,7 @@ cargo fmt --all
 cargo clippy --all-targets --all-features -- -D warnings
 cargo test
 python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py scripts/analyze_validation.py
+docker compose config
 ```
 
 ## Pull request expectations
@@ -27,6 +28,7 @@ python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experime
 - Runtime changes should include supervision/backpressure behavior notes and tests.
 - Scientific claims should include scenario names, strategy matrix, and reported KPI definitions.
 - Ensure CI passes all quality gates before requesting review.
+- For product-facing changes, include docker stack impact and local `docker compose` smoke notes.
 - Keep README and developer docs aligned with behavior and file layout.
 - Avoid unrelated refactors in the same change set.
 

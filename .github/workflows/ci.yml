@@ -54,3 +54,12 @@ jobs:
         run: cargo run --release --bin scale_benchmark -- 10k 5
       - name: Validation smoke
         run: cargo run --release --bin scientific_validation
+
+  package-smoke:
+    name: Product package smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Docker compose config check
+        run: docker compose config

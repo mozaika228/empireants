@@ -1,0 +1,63 @@
+services:
+  empireants-observability:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: empireants:local
+    container_name: empireants-observability
+    command: ["observability_server", "0.0.0.0:9109", "100000", "384", "384"]
+    ports:
+      - "${EMPIREANTS_METRICS_PORT:-9109}:9109"
+    restart: unless-stopped
+
+  empireants-ui:
+    image: empireants:local
+    container_name: empireants-ui
+    command: ["ui_server", "0.0.0.0:9110"]
+    environment:
+      - EMPIREANTS_METRICS_TARGET=empireants-observability:9109
+    ports:
+      - "${EMPIREANTS_UI_PORT:-9110}:9110"
+    depends_on:
+      empireants-observability:
+        condition: service_started
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: empireants-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    depends_on:
+      empireants-observability:
+        condition: service_started
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.1.4
+    container_name: empireants-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      prometheus:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+  grafana-data:
