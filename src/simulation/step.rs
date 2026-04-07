@@ -74,7 +74,7 @@ impl Simulation {
             .collect::<Vec<_>>();
         Self {
             pheromones: PheromoneField::new(config.width, config.height),
-            runtime: ActorRuntime,
+            runtime: ActorRuntime::default(),
             aco: AcoPolicy::new(config.aco_strategy),
             metrics: SimulationMetrics {
                 ant_count: config.ant_count,
