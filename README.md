@@ -37,14 +37,17 @@ empireants/
 |   |   |-- mod.rs
 |   |   |-- step.rs
 |   |   |-- scale.rs
+|   |   |-- validation.rs
 |   |   `-- aco.rs
 |   |-- bin/
 |   |   |-- scale_benchmark.rs
-|   |   `-- observability_server.rs
+|   |   |-- observability_server.rs
+|   |   `-- scientific_validation.rs
 |   `-- render/
 |       `-- mod.rs
 |-- scripts/
 |   |-- analyze.py
+|   |-- analyze_validation.py
 |   |-- plot_heatmap.py
 |   `-- experiments.py
 |-- tests/
@@ -52,6 +55,7 @@ empireants/
 |   |-- test_ant.rs
 |   |-- test_observability.rs
 |   |-- test_runtime.rs
+|   |-- test_validation.rs
 |   `-- test_scale.rs
 |-- LICENSE
 |-- CONTRIBUTING.md
@@ -106,6 +110,7 @@ sequenceDiagram
 - CSV artifact export for metrics and pheromone snapshots
 - Prometheus-compatible metric export for observability pipelines
 - scale benchmark profiles for `10k`, `100k`, and `1m` ants
+- scientific validation suite with scenario-strategy matrix and reproducible KPI report
 - Python scripts for metric analysis, ASCII heatmap rendering, and experiment sweeps
 
 ## Run
@@ -173,8 +178,29 @@ cargo test
 cargo run -- 200
 cargo run --release --bin scale_benchmark
 cargo run --release --bin scale_benchmark 100k 200
+cargo run --release --bin scientific_validation
+python scripts/analyze_validation.py
 python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experiments.py
 ```
+
+## Scientific validation
+
+Scientific validation is implemented as a deterministic matrix:
+
+- scenarios: `open_field`, `narrow_passages`, `obstacle_shift`
+- strategies: `basic`, `max_min`, `as_rank`, `ant_net`
+- KPIs: food collection, first food step, convergence proxy, exploration efficiency, throughput, runtime stability
+
+Run:
+
+```bash
+cargo run --release --bin scientific_validation
+python scripts/analyze_validation.py
+```
+
+Artifacts:
+
+- `artifacts/validation_report.csv`
 
 ## Real scaling benchmark
 

@@ -7,7 +7,7 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 use empireants::observability::{encode_prometheus_with_metadata, ScrapeMetadata};
-use empireants::simulation::{seeded_scale_world, Simulation, SimulationConfig};
+use empireants::simulation::{seeded_scale_world, AcoStrategy, Simulation, SimulationConfig};
 
 const DEFAULT_BIND: &str = "127.0.0.1:9109";
 
@@ -43,6 +43,7 @@ fn main() {
             food_deposit: 0.7,
             home_deposit: 0.5,
             harvest_amount: 1,
+            aco_strategy: AcoStrategy::MaxMin,
         },
         seeded_scale_world(width, height),
     );

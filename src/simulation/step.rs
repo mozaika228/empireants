@@ -6,7 +6,7 @@ use std::time::Instant;
 
 use crate::ant::{ActorRuntime, Ant, AntState};
 use crate::observability::{encode_prometheus, RuntimeSnapshot};
-use crate::simulation::AcoPolicy;
+use crate::simulation::{AcoPolicy, AcoStrategy};
 use crate::world::{Cell, Grid, PheromoneField};
 
 #[derive(Clone, Debug)]
@@ -19,6 +19,7 @@ pub struct SimulationConfig {
     pub food_deposit: f32,
     pub home_deposit: f32,
     pub harvest_amount: u32,
+    pub aco_strategy: AcoStrategy,
 }
 
 impl Default for SimulationConfig {
@@ -32,6 +33,7 @@ impl Default for SimulationConfig {
             food_deposit: 0.8,
             home_deposit: 0.6,
             harvest_amount: 1,
+            aco_strategy: AcoStrategy::MaxMin,
         }
     }
 }
@@ -73,7 +75,7 @@ impl Simulation {
         Self {
             pheromones: PheromoneField::new(config.width, config.height),
             runtime: ActorRuntime,
-            aco: AcoPolicy::default(),
+            aco: AcoPolicy::new(config.aco_strategy),
             metrics: SimulationMetrics {
                 ant_count: config.ant_count,
                 active_food_sources: grid.count_food_cells(),
@@ -170,6 +172,10 @@ impl Simulation {
 
     pub fn world(&self) -> &Grid {
         &self.grid
+    }
+
+    pub fn world_mut(&mut self) -> &mut Grid {
+        &mut self.grid
     }
 
     pub fn pheromones(&self) -> &PheromoneField {

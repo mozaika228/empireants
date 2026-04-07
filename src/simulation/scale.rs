@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use crate::simulation::{Simulation, SimulationConfig};
+use crate::simulation::{AcoStrategy, Simulation, SimulationConfig};
 use crate::world::{Cell, Grid};
 
 #[derive(Clone, Copy, Debug)]
@@ -77,6 +77,7 @@ pub fn run_scale_profile(profile: ScaleProfile, override_steps: Option<usize>) -
         food_deposit: 0.7,
         home_deposit: 0.5,
         harvest_amount: 1,
+        aco_strategy: AcoStrategy::MaxMin,
     };
     let world = seeded_scale_world(width, height);
     let mut simulation = Simulation::new(config, world);

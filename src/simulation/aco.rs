@@ -6,6 +6,21 @@ pub enum AcoStrategy {
     AntNet,
 }
 
+impl AcoStrategy {
+    pub fn all() -> [Self; 4] {
+        [Self::Basic, Self::MaxMin, Self::AsRank, Self::AntNet]
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Basic => "basic",
+            Self::MaxMin => "max_min",
+            Self::AsRank => "as_rank",
+            Self::AntNet => "ant_net",
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct AcoPolicy {
     alpha: f32,
@@ -54,4 +69,3 @@ impl Default for AcoPolicy {
         Self::new(AcoStrategy::MaxMin)
     }
 }
-
