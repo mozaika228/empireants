@@ -108,6 +108,34 @@ pub fn encode_prometheus(metrics: SimulationMetrics, runtime: RuntimeSnapshot) -
         "empireants_simulation_elapsed_seconds {:.6}",
         metrics.simulation_elapsed_seconds
     );
+    output.push_str("# HELP empireants_runtime_mailbox_depth Current actor runtime mailbox depth.\n");
+    output.push_str("# TYPE empireants_runtime_mailbox_depth gauge\n");
+    let _ = writeln!(
+        output,
+        "empireants_runtime_mailbox_depth {}",
+        metrics.runtime_mailbox_len
+    );
+    output.push_str("# HELP empireants_runtime_dropped_messages_total Total dropped runtime messages.\n");
+    output.push_str("# TYPE empireants_runtime_dropped_messages_total counter\n");
+    let _ = writeln!(
+        output,
+        "empireants_runtime_dropped_messages_total {}",
+        metrics.runtime_dropped_messages_total
+    );
+    output.push_str("# HELP empireants_runtime_restarts_total Total actor restarts performed by supervision.\n");
+    output.push_str("# TYPE empireants_runtime_restarts_total counter\n");
+    let _ = writeln!(
+        output,
+        "empireants_runtime_restarts_total {}",
+        metrics.runtime_restarts_total
+    );
+    output.push_str("# HELP empireants_runtime_supervision_events_total Total runtime supervision events.\n");
+    output.push_str("# TYPE empireants_runtime_supervision_events_total counter\n");
+    let _ = writeln!(
+        output,
+        "empireants_runtime_supervision_events_total {}",
+        metrics.runtime_supervision_events_total
+    );
     output
 }
 

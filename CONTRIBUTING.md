@@ -23,6 +23,7 @@ python -m py_compile scripts/analyze.py scripts/plot_heatmap.py scripts/experime
 - Keep observability outputs stable unless there is a clear migration reason.
 - Keep `/metrics` names backward-compatible when possible; treat changes as API changes.
 - For performance-sensitive changes, include `scale_benchmark` before/after numbers.
+- Runtime changes should include supervision/backpressure behavior notes and tests.
 - Keep README and developer docs aligned with behavior and file layout.
 - Avoid unrelated refactors in the same change set.
 

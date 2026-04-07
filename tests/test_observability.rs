@@ -16,6 +16,10 @@ fn prometheus_encoder_exposes_expected_metrics() {
         average_step_micros: 902.5,
         max_step_micros: 1440,
         simulation_elapsed_seconds: 0.108,
+        runtime_mailbox_len: 120,
+        runtime_dropped_messages_total: 0,
+        runtime_restarts_total: 1,
+        runtime_supervision_events_total: 2,
     };
     let runtime = RuntimeSnapshot {
         carrying_ants: 12,
@@ -33,6 +37,7 @@ fn prometheus_encoder_exposes_expected_metrics() {
     assert!(output.contains("empireants_ants_carrying 12"));
     assert!(output.contains("empireants_average_energy 0.91000"));
     assert!(output.contains("empireants_step_latency_last_microseconds 812"));
+    assert!(output.contains("empireants_runtime_restarts_total 1"));
 }
 
 #[test]
@@ -48,6 +53,10 @@ fn prometheus_encoder_supports_scrape_metadata() {
         average_step_micros: 97.2,
         max_step_micros: 160,
         simulation_elapsed_seconds: 0.04,
+        runtime_mailbox_len: 16,
+        runtime_dropped_messages_total: 0,
+        runtime_restarts_total: 0,
+        runtime_supervision_events_total: 0,
     };
     let runtime = RuntimeSnapshot::default();
     let metadata = ScrapeMetadata {

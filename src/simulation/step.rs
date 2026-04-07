@@ -48,6 +48,10 @@ pub struct SimulationMetrics {
     pub average_step_micros: f64,
     pub max_step_micros: u64,
     pub simulation_elapsed_seconds: f64,
+    pub runtime_mailbox_len: usize,
+    pub runtime_dropped_messages_total: u64,
+    pub runtime_restarts_total: u64,
+    pub runtime_supervision_events_total: u64,
 }
 
 pub struct Simulation {
@@ -91,6 +95,14 @@ impl Simulation {
         let mut score_sum = 0.0;
         for update in updates {
             let ant = &mut self.ants[update.ant_id];
+            if update.recovered {
+                ant.position = update.to;
+                ant.last_position = Some(update.from);
+                ant.state = update.state;
+                ant.carrying_food = update.carrying_food;
+                ant.energy = 1.0;
+                continue;
+            }
             ant.move_to(update.to);
             score_sum += update.decision_score.max(0.0);
 
@@ -143,6 +155,11 @@ impl Simulation {
                     / self.metrics.steps as f64;
         }
         self.metrics.simulation_elapsed_seconds += step_micros as f64 / 1_000_000.0;
+        let runtime_stats = self.runtime.stats();
+        self.metrics.runtime_mailbox_len = runtime_stats.mailbox_len;
+        self.metrics.runtime_dropped_messages_total = runtime_stats.dropped_messages_total;
+        self.metrics.runtime_restarts_total = runtime_stats.restarts_total;
+        self.metrics.runtime_supervision_events_total = runtime_stats.supervision_events_total;
     }
 
     pub fn run_steps(&mut self, steps: usize) {
@@ -211,7 +228,7 @@ impl Simulation {
     pub fn export_metrics_csv(&self, path: &Path) -> std::io::Result<()> {
         let metrics = self.metrics();
         let output = format!(
-            "steps,ant_count,food_collected,exploration_moves,average_decision_score,active_food_sources,last_step_micros,average_step_micros,max_step_micros,simulation_elapsed_seconds\n{},{},{},{},{:.5},{},{},{:.2},{},{}\n",
+            "steps,ant_count,food_collected,exploration_moves,average_decision_score,active_food_sources,last_step_micros,average_step_micros,max_step_micros,simulation_elapsed_seconds,runtime_mailbox_len,runtime_dropped_messages_total,runtime_restarts_total,runtime_supervision_events_total\n{},{},{},{},{:.5},{},{},{:.2},{},{},{},{},{},{}\n",
             metrics.steps,
             metrics.ant_count,
             metrics.food_collected,
@@ -221,7 +238,11 @@ impl Simulation {
             metrics.last_step_micros,
             metrics.average_step_micros,
             metrics.max_step_micros,
-            metrics.simulation_elapsed_seconds
+            metrics.simulation_elapsed_seconds,
+            metrics.runtime_mailbox_len,
+            metrics.runtime_dropped_messages_total,
+            metrics.runtime_restarts_total,
+            metrics.runtime_supervision_events_total
         );
         fs::write(path, output)
     }

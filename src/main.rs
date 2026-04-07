@@ -52,12 +52,15 @@ fn main() {
 
     println!("EmpireAnts simulation complete");
     println!(
-        "steps={} ants={} food_collected={} exploration={} average_decision_score={:.3}",
+        "steps={} ants={} food_collected={} exploration={} average_decision_score={:.3} runtime_restarts={} runtime_drops={} supervision_events={}",
         metrics.steps,
         metrics.ant_count,
         metrics.food_collected,
         metrics.exploration_moves,
-        metrics.average_decision_score
+        metrics.average_decision_score,
+        metrics.runtime_restarts_total,
+        metrics.runtime_dropped_messages_total,
+        metrics.runtime_supervision_events_total
     );
     println!("{}", build_frame_summary(simulation.world(), metrics));
     println!("artifacts:");

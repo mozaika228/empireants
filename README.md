@@ -51,6 +51,7 @@ empireants/
 |   |-- test_pheromone.rs
 |   |-- test_ant.rs
 |   |-- test_observability.rs
+|   |-- test_runtime.rs
 |   `-- test_scale.rs
 |-- LICENSE
 |-- CONTRIBUTING.md
@@ -101,6 +102,7 @@ sequenceDiagram
 - Local ant behavior with pheromone following and return-to-nest logic
 - Dynamic pheromone field with evaporation and diffusion
 - ACO strategy abstraction for Basic, Max-Min, AS-rank, and AntNet-style scoring
+- actor runtime with mailbox backpressure, supervision events, and controlled actor recovery
 - CSV artifact export for metrics and pheromone snapshots
 - Prometheus-compatible metric export for observability pipelines
 - scale benchmark profiles for `10k`, `100k`, and `1m` ants
@@ -150,6 +152,7 @@ Tracked observability signals include:
 - behavior quality: exploration moves and average decision score
 - simulation latency: last/average/max step duration in microseconds
 - runtime state: ants carrying food, searching, returning, and average energy
+- runtime resilience: mailbox depth, dropped messages, supervision events, restart counters
 - environment dynamics: active food sources and peak pheromone intensity
 
 Example metrics pipeline:
