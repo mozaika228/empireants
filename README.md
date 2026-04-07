@@ -87,6 +87,17 @@ empireants/
 |   `-- ISSUE_TEMPLATE/
 |       |-- bug_report.yml
 |       `-- feature_request.yml
+|-- docs/
+|   |-- README.md
+|   |-- architecture.md
+|   |-- experiments.md
+|   |-- reproducibility.md
+|   |-- kpi-glossary.md
+|   `-- adr/
+|       |-- README.md
+|       |-- 0001-runtime-supervision-model.md
+|       |-- 0002-observability-contract.md
+|       `-- 0003-scientific-validation-matrix.md
 `-- pyproject.toml
 ```
 
@@ -284,6 +295,21 @@ Quality gates are codified in repository automation:
 - consistency:
   - pinned `rust-toolchain.toml` with `rustfmt` + `clippy`
   - shared `.editorconfig` and `clippy.toml`
+
+## Research documentation
+
+EmpireAnts includes a dedicated research documentation layer in `docs/`:
+
+- architecture spec and runtime invariants
+- experiment protocol and KPI semantics
+- reproducibility checklist and run recipes
+- ADR index with accepted architectural decisions
+
+Entry point:
+
+```text
+docs/README.md
+```
 
 ## Scientific validation
 
